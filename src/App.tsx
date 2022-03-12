@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
-  Button,
   Card,
   Col,
   Container,
@@ -13,6 +12,48 @@ import {
 
 function App() {
   //state
+  const [isLoadUser, setIsLoadUser] = React.useState<boolean>(false)
+  const [isLoadMsg, setIsLoadMsg] = React.useState<boolean>(false)
+  const [listUser, setListUser] = React.useState<any[]>([
+    { id: 1, name: 'Brigitte' },
+    { id: 2, name: 'céline' },
+    { id: 3, name: 'Sophie' },
+    { id: 4, name: 'Corina' },
+  ])
+  const [listMsg, setListMsg] = React.useState<any[]>([
+    {
+      id: 1,
+      text: 'Optio aut unde suscipit totam voluptatem odit incidunt ea. Qui distinctio placeat et. Quibusdam vel magni saepe. Quibusdam incidunt molestias cum repudiandae vel quaerat in magni. Ut eos a repellendus aut ipsum asperiores dolor sit.',
+    },
+    {
+      id: 2,
+      text: 'Unde similique velit error nulla et ut fuga. Eveniet quis asperiores voluptas architecto ut eos eveniet inventore. Aut quo quo impedit itaque atque maiores.',
+    },
+    {
+      id: 3,
+      text: 'Amet cum aliquid in nisi tenetur sapiente reprehenderit nihil. Aperiam quo ad sunt quia natus placeat. Vel aliquid quas. Quis possimus impedit unde corrupti et quia nihil molestiae.',
+    },
+    {
+      id: 4,
+      text: 'Dolore ut officiis accusantium voluptatem quidem possimus qui accusantium eum. Omnis sed id sint. Fugit explicabo ut mollitia consequatur explicabo aut.',
+    },
+    {
+      id: 3,
+      text: 'Amet cum aliquid in nisi tenetur sapiente reprehenderit nihil. Aperiam quo ad sunt quia natus placeat. Vel aliquid quas. Quis possimus impedit unde corrupti et quia nihil molestiae.',
+    },
+    {
+      id: 4,
+      text: 'Dolore ut officiis accusantium voluptatem quidem possimus qui accusantium eum. Omnis sed id sint. Fugit explicabo ut mollitia consequatur explicabo aut.',
+    },
+    {
+      id: 3,
+      text: 'Amet cum aliquid in nisi tenetur sapiente reprehenderit nihil. Aperiam quo ad sunt quia natus placeat. Vel aliquid quas. Quis possimus impedit unde corrupti et quia nihil molestiae.',
+    },
+    {
+      id: 4,
+      text: 'olore ut officiis accusantium voluptatem quidem possimus qui accusantium eum. Omnis sed id sint. Fugit explicabo ut mollitia consequatur explicabo aut.',
+    },
+  ])
 
   return (
     <>
@@ -32,87 +73,42 @@ function App() {
         <Row className='d-flex flex-row'>
           <Col lg='3'>
             <h2>Liste des utilisateurs</h2>
-            <ListGroup variant='flush'>
-              <ListGroup.Item>Cras justo odio</ListGroup.Item>
-              <ListGroup.Item>Dapibus ac facilisis in</ListGroup.Item>
-              <ListGroup.Item>Morbi leo risus</ListGroup.Item>
-              <ListGroup.Item>Porta ac consectetur ac</ListGroup.Item>
-            </ListGroup>
+            {isLoadUser ? (
+              <p>Chargement...</p>
+            ) : (
+              <ListGroup variant='flush'>
+                {listUser.map((user) => (
+                  <ListGroup.Item key={user.id}>{user.name}</ListGroup.Item>
+                ))}
+              </ListGroup>
+            )}
           </Col>
-          <Col className='border ' lg='9'>
-            <h2 className='border-bottom'>Liste des messages</h2>
+          <Col className='border-start' lg='9' style={{ paddingBottom: '7%' }}>
+            <Container>
+              <h2 className='border-bottom'>Liste des messages</h2>
+              {isLoadMsg ? (
+                <p>Chargement...</p>
+              ) : (
+                <>
+                  {listMsg.map((msg) => (
+                    <div className='d-flex justify-content-start mb-3'>
+                      <Card style={{ width: '30rem' }}>
+                        <Card.Body>
+                          <Card.Title>user name</Card.Title>
 
-            <div className='d-flex justify-content-start mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>Some qu</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-
-            <div className='d-flex justify-content-start mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>
-                    Some quick example of messageSome quick example of messageSome quick
-                    example of message
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-            <div className='d-flex justify-content-start mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>Some qu</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-            <div className='d-flex justify-content-end mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>
-                    Some quick example of messageSome quick example of messageSome quick
-                    example of message
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-            <div className='d-flex justify-content-start mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>Some qu</Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-            <div className='d-flex justify-content-start mb-3'>
-              <Card style={{ width: '30rem' }}>
-                <Card.Body>
-                  <Card.Title>User Name</Card.Title>
-                  <Card.Text>
-                    Some quick example of messageSome quick example of messageSome quick
-                    example of message
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </div>
-
-            <Card style={{ width: '30rem' }}>
-              <Card.Body>
-                <Card.Title>User Name</Card.Title>
-                <Card.Text>Some quick example of message</Card.Text>
-              </Card.Body>
-            </Card>
-            <Container
-              className='d-flex justify-content-center bg-light mx-0 '
-              fluid='lg'
-              style={{ width: '100%', position: 'sticky', bottom: '0%' }}
-            >
-              <Container>
+                          <Card.Text>{msg.text}</Card.Text>
+                        </Card.Body>
+                      </Card>
+                    </div>
+                  ))}
+                </>
+              )}
+            </Container>
+            <Container className='d-flex justify-content-center mx-0 px-0' fluid='lg'>
+              <Container
+                className='bg-light'
+                style={{ width: '74.6%', position: 'fixed', bottom: '0%' }}
+              >
                 <hr />
                 <InputGroup className='my-3 d-flex justify-content-center'>
                   <FormControl
