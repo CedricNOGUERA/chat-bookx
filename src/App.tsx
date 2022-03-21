@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   Button,
   Card,
@@ -13,201 +13,81 @@ import {
   Row,
 } from 'react-bootstrap'
 import axios from 'axios'
+import './App.css'
 
-// import * as qs from 'qs'
-//@ts-check
 function App() {
   //state
+  const [isMe, setIsMe] = React.useState('2')
   const [isLoadUser, setIsLoadUser] = React.useState<boolean>(false)
   const [isLoadMsg, setIsLoadMsg] = React.useState<boolean>(false)
   const [newMsg, setNewMsg] = React.useState<string>('')
   const [updateMsg, setUpdateMsg] = React.useState<string>('')
   const [msgId, setMsgId] = React.useState<string>('')
-  const [updateUserId, setUpdateUserId] = React.useState<string>('')
+  // const [updateUserId, setUpdateUserId] = React.useState<string>('')
 
   const [show, setShow] = React.useState<boolean>(false)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
-  const [listMsg, setListMsg] = React.useState<any[]>([
-    {
-      createdAt: '2022-03-14T09:29:45.080Z',
-      text: 'Vel ut aperiam vero aut corrupti in tempore eius occaecati. Dolor consequatur sint voluptas rerum facilis voluptatibus. Ut voluptate odio est. Dignissimos et quos sed nesciunt.',
-      user_id: 28,
-      id: '7',
-    },
-    {
-      createdAt: '2022-03-14T19:14:27.483Z',
-      text: 'Impedit quisquam et quia. Esse saepe enim veritatis magni nisi. Delectus velit quis omnis vitae magni voluptas ullam animi nulla. Et laborum praesentium impedit ut accusantium excepturi aut ipsa soluta.',
-      user_id: 4,
-      id: '8',
-    },
-    {
-      createdAt: '2022-03-15T15:06:15.319Z',
-      text: 'Yo',
-      user_id: '1',
-      id: '9',
-    },
-    {
-      createdAt: '2022-03-15T18:46:51.985Z',
-      text: 'Fabuleux',
-      user_id: '1',
-      id: '10',
-    },
-    {
-      createdAt: '2022-03-16T03:23:59.925Z',
-      text: 'Festoyement',
-      user_id: '1',
-      id: '11',
-    },
-    {
-      createdAt: '2022-03-17T00:34:40.867Z',
-      text: 'grout',
-      user_id: '2',
-      id: '12',
-    },
-    {
-      createdAt: '2022-03-16T17:01:12.608Z',
-      text: 'grout2',
-      user_id: '2',
-      id: '13',
-    },
-  ])
-  const [listUser, setListUser] = React.useState<any[]>([
-    {
-      name: 'Vincent Murazik',
-      id: '1',
-    },
-    {
-      name: 'Ricardo Lang',
-      id: '2',
-    },
-    {
-      name: 'Katherine Reichel',
-      id: '3',
-    },
-    {
-      name: 'Willis Daugherty',
-      id: '4',
-    },
-    {
-      name: 'Earl Homenick',
-      id: '5',
-    },
-    {
-      name: 'Dr. Marcus Keeling',
-      id: '6',
-    },
-    {
-      name: 'Darnell Harvey',
-      id: '7',
-    },
-    {
-      name: 'Nicholas Cummings',
-      id: '8',
-    },
-    {
-      name: 'Jimmie Reichert',
-      id: '9',
-    },
-    {
-      name: 'Wilson Pollich V',
-      id: '10',
-    },
-    {
-      name: 'Miss Freda Raynor',
-      id: '11',
-    },
-    {
-      name: 'Charlotte Hoppe',
-      id: '12',
-    },
-    {
-      name: 'Wade Fay',
-      id: '13',
-    },
-    {
-      name: 'Garrett Runolfsdottir',
-      id: '14',
-    },
-    {
-      name: 'Tina Reilly',
-      id: '15',
-    },
-    {
-      name: 'Dr. Lloyd Miller',
-      id: '16',
-    },
-    {
-      name: 'Carroll Adams',
-      id: '17',
-    },
-    {
-      name: 'Elijah Walker',
-      id: '18',
-    },
-    {
-      name: 'Colin Toy',
-      id: '19',
-    },
-    {
-      name: 'Eduardo Pacocha',
-      id: '20',
-    },
-    {
-      name: 'Wilma Spinka',
-      id: '21',
-    },
-    {
-      name: 'Willard Anderson',
-      id: '22',
-    },
-    {
-      name: 'Tara Walsh',
-      id: '23',
-    },
-    {
-      name: 'Nancy Herzog',
-      id: '24',
-    },
-    {
-      name: 'Sonia Nienow',
-      id: '25',
-    },
-    {
-      name: 'Caleb Turner',
-      id: '26',
-    },
-    {
-      name: 'Dale Rosenbaum',
-      id: '27',
-    },
-    {
-      name: 'Carlos Macejkovic',
-      id: '28',
-    },
-    {
-      name: 'Josh Yundt',
-      id: '29',
-    },
-  ])
-  //GET
-  useEffect(() => {}, [])
+  const [listMsg, setListMsg] = React.useState<any[]>([])
+  const [listUser, setListUser] = React.useState<any[]>([])
 
-  //
+  //GET
+  useEffect(() => {
+    var configur = {
+      method: 'get',
+      url: 'https://622a896c14ccb950d21e946d.mockapi.io/users',
+      headers: {},
+    }
+
+    axios(configur)
+      .then(function (response) {
+        setListUser(response.data)
+      })
+      .catch(function (error) {
+        setIsLoadUser(true)
+        console.log(error)
+      })
+
+    var config = {
+      method: 'get',
+      url: 'https://622a896c14ccb950d21e946d.mockapi.io/messages',
+      headers: {},
+    }
+
+    axios(config)
+      .then(function (response) {
+        const resp = response.data
+        setListMsg(response.data)
+      })
+      .catch(function (error) {
+        setIsLoadMsg(true)
+        console.log(error)
+      })
+  }, [])
+
   //POST
   const postMsg = (e: any) => {
     e.preventDefault()
 
-    const modItem = {
-      createdAt: '2022-03-14T09:29:45.080Z',
-      text: newMsg,
-      user_id: '1',
-      id: '69',
-    }
+    var myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
 
-    console.log(modItem)
-    setListMsg([modItem, ...listMsg])
+    var urlencoded = new URLSearchParams()
+    urlencoded.append('user_id', isMe)
+    urlencoded.append('text', `${newMsg}`)
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: urlencoded,
+    }
+    fetch('https://622a896c14ccb950d21e946d.mockapi.io/messages', requestOptions)
+      .then((response) => response.json())
+
+      .then((result) => setListMsg([...listMsg, result]))
+      .catch((error) => console.log('error', error))
+
     setNewMsg('')
   }
 
@@ -215,43 +95,71 @@ function App() {
   const showModalUpdate = (msg: any) => {
     handleShow()
     setUpdateMsg(msg.text)
-    setUpdateUserId(msg.user_id)
+    // setUpdateUserId(msg.user_id)
     setMsgId(msg.id)
-    const index = listMsg.findIndex((todo: any) => todo.id === msgId)
-    // const indmsg = msg.findIndex((good: any) => good.id === msgId)
-
-    console.log(msg)
-    console.log(msg.user_id)
-    console.log(updateMsg)
   }
   const updMsg = (e: any) => {
     e.preventDefault()
-    const item = {
-      createdAt: '2022-03-14T09:29:45.080Z',
-      text: updateMsg,
-      user_id: updateUserId,
-      id: msgId,
-    }
-    const index = listMsg.findIndex((todo: any) => todo.id === msgId)
-    const newList = [...listMsg]
-    newList[index] = item
-    setListMsg(newList)
 
-    console.log(index)
+    //state codé en dur
+    // const item = {
+    //   createdAt: '2022-03-14T09:29:45.080Z',
+    //   text: updateMsg,
+    //   user_id: updateUserId,
+    //   id: msgId,
+    // }
+
+    var myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
+
+    var urlencoded = new URLSearchParams()
+    urlencoded.append('text', updateMsg)
+
+    var requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      body: urlencoded,
+    }
+
+    fetch(`https://622a896c14ccb950d21e946d.mockapi.io/messages/${msgId}`, requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        const index = listMsg.findIndex((todo: any) => todo.id === msgId)
+        const newList = [...listMsg]
+        newList[index] = result
+        setListMsg(newList)
+      })
+      .catch((error) => console.log('error', error))
+
     handleClose()
   }
 
   //DELETE
   const deleteMsg = (id: any) => {
-    const taches: any = listMsg.filter((msg: any) => msg.id !== id)
+    var config = {
+      method: 'delete',
+      url: `https://622a896c14ccb950d21e946d.mockapi.io/messages/${id}`,
+      headers: {},
+    }
+    axios(config)
+      .then(function (response) {
+        const taches: any = listMsg.filter((msg: any) => msg.id !== id)
 
-    setListMsg(taches)
+        setListMsg(taches)
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
   }
 
   return (
     <>
       <Container fluid className='p-0'>
-        <Navbar className='px-2' bg='secondary' color='white' style={{ height: '5vh' }}>
+        <Navbar
+          className='px-2'
+          color='white'
+          style={{ height: '5vh', backgroundColor: '#F2494E' }}
+        >
           <Navbar.Brand href='#home'>
             <h3>Chat Book</h3>
           </Navbar.Brand>
@@ -263,12 +171,12 @@ function App() {
         </Navbar>
       </Container>
       <Container fluid style={{ position: 'relative' }}>
-        <Row className='d-flex flex-row'>
+        <Row className='d-flex flex-row mt-1'>
           <Col
             lg='3'
             style={{
               display: 'block',
-              height: '100vh',
+              height: '94vh',
               overflowY: 'scroll',
             }}
           >
@@ -279,12 +187,15 @@ function App() {
             ) : (
               <ListGroup variant='flush'>
                 {listUser.map((user) => (
-                  <ListGroup.Item key={user.id}>{user.name}</ListGroup.Item>
+                  <ListGroup.Item key={user.id} className='text-secondary'>
+                    {user.name}
+                  </ListGroup.Item>
                 ))}
+                {listUser.slice(16, 30)}
               </ListGroup>
             )}
           </Col>
-          <Col className='border-start' lg='9' style={{ height: '100vh' }}>
+          <Col className='' lg='9' style={{ height: '100vh' }}>
             <h2 className='my-3'>Message List</h2>
             <hr />
             <Container
@@ -300,9 +211,21 @@ function App() {
               ) : (
                 <>
                   {listMsg.map((msg) => (
-                    <div key={msg.id} className='d-flex justify-content-start mb-3'>
+                    <div
+                      key={msg.id}
+                      className={
+                        msg.user_id == isMe
+                          ? 'd-flex justify-content-end mt-3'
+                          : 'd-flex justify-content-start mt-3'
+                      }
+                    >
                       <Card style={{ width: '30rem' }}>
                         <Card.Body>
+                          <sup className='d-flex justify-content-center'>
+                            {msg.createdAt.slice(8, 10)}-0{msg.createdAt.slice(6, 7)}-
+                            {msg.createdAt.slice(0, 4)} à {msg.createdAt.slice(11, 19)}
+                          </sup>
+                          <hr />
                           {listUser
                             .filter((user) => user.id == msg.user_id)
                             .map((user) => (
@@ -310,20 +233,25 @@ function App() {
                             ))}
                           <Card.Text>{msg.text}</Card.Text>
                           <Card.Text className='d-flex justify-content-end'>
-                            <Button
-                              className='button bg-white'
-                              onClick={() => showModalUpdate(msg)}
-                            >
-                              <img src='/src/assets/icons8-stylo-à-bille-16.png' alt='trash' />
-                            </Button>
-                          </Card.Text>
-                          <Card.Text className='d-flex justify-content-end'>
-                            <Button
-                              className='button bg-white'
-                              onClick={() => deleteMsg(msg.id)}
-                            >
-                              <img src='/src/assets/filled-trash_16.png' alt='trash' />
-                            </Button>
+                            {msg.user_id == isMe && (
+                              <>
+                                <Button
+                                  className='bg-white '
+                                  onClick={() => showModalUpdate(msg)}
+                                >
+                                  <img
+                                    src='/src/assets/icons8-stylo-à-bille-16.png'
+                                    alt='trash'
+                                  />
+                                </Button>
+                                <Button
+                                  className='bg-white mx-2'
+                                  onClick={() => deleteMsg(msg.id)}
+                                >
+                                  <img src='/src/assets/filled-trash_16.png' alt='trash' />
+                                </Button>
+                              </>
+                            )}
                           </Card.Text>
                         </Card.Body>
                       </Card>
@@ -334,10 +262,9 @@ function App() {
             </Container>
             <Container className='d-flex justify-content-center mx-0 px-0' fluid='lg'>
               <Container
-                className='bg-light'
+                className='bg-light rounded mb-1'
                 style={{ width: '74.8%', position: 'fixed', bottom: '0%' }}
               >
-                {/* <hr /> */}
                 <Form
                   onSubmit={postMsg}
                   noValidate
@@ -374,8 +301,7 @@ function App() {
                       aria-describedby='taskHelpBlock'
                       value={updateMsg}
                       onChange={(e) => setUpdateMsg(e.currentTarget.value)}
-                      style={{ height: '100px' }}
-                      // {...console.log(updateMsg)}
+                      style={{ height: '20vh' }}
                     />
                   </InputGroup>
                 </Modal.Body>
@@ -393,4 +319,4 @@ function App() {
   )
 }
 
-export default App
+export default React.memo(App)
