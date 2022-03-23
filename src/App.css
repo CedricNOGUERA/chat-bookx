@@ -1,7 +1,9 @@
+h2 {
+  color: #575d61;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
-  /* background-color: rgb(253, 251, 255); */
-  /* background-color: rgb(40, 23, 59); */
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {

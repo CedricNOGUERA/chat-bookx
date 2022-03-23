@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -17,30 +17,31 @@ import './App.css'
 
 function App() {
   //state
-  const [isMe, setIsMe] = React.useState('2')
+  const [isMe, setIsMe] = React.useState<string>('')
+  const [isAuth, setIsAuth] = React.useState<boolean>(false)
+  const [isError, setIsErrorAuth] = React.useState<boolean>(false)
   const [isLoadUser, setIsLoadUser] = React.useState<boolean>(false)
   const [isLoadMsg, setIsLoadMsg] = React.useState<boolean>(false)
   const [newMsg, setNewMsg] = React.useState<string>('')
   const [updateMsg, setUpdateMsg] = React.useState<string>('')
   const [msgId, setMsgId] = React.useState<string>('')
-  // const [updateUserId, setUpdateUserId] = React.useState<string>('')
 
   const [show, setShow] = React.useState<boolean>(false)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
+  const [showAuth, setShowAuth] = React.useState<boolean>(true)
+  const handleCloseAuth = () => setShowAuth(false)
+  const handleShowAuth = () => setShowAuth(true)
+
   const [listMsg, setListMsg] = React.useState<any[]>([])
   const [listUser, setListUser] = React.useState<any[]>([])
+  const [pseudoUser, setPseudoUser] = React.useState<string>('')
+  const [passUser, setPassUser] = React.useState<string>('')
 
-  //GET
   useEffect(() => {
-    var configur = {
-      method: 'get',
-      url: 'https://622a896c14ccb950d21e946d.mockapi.io/users',
-      headers: {},
-    }
-
-    axios(configur)
+    axios
+      .get('https://622a896c14ccb950d21e946d.mockapi.io/users')
       .then(function (response) {
         setListUser(response.data)
       })
@@ -49,13 +50,22 @@ function App() {
         console.log(error)
       })
 
-    var config = {
-      method: 'get',
-      url: 'https://622a896c14ccb950d21e946d.mockapi.io/messages',
-      headers: {},
-    }
+    const interval = setInterval(() => {
+      axios
+        .get('https://622a896c14ccb950d21e946d.mockapi.io/messages')
+        .then(function (response) {
+          const resp = response.data
+          setListMsg(response.data)
+        })
+        .catch(function (error) {
+          setIsLoadMsg(true)
+          console.log(error)
+        })
+    }, 1000)
+    return () => clearInterval(interval)
 
-    axios(config)
+    axios
+      .get('https://622a896c14ccb950d21e946d.mockapi.io/messages')
       .then(function (response) {
         const resp = response.data
         setListMsg(response.data)
@@ -65,7 +75,28 @@ function App() {
         console.log(error)
       })
   }, [])
-
+  // User Auth
+  const authUser = (e: any) => {
+    const pseudo = pseudoUser
+    const pass = passUser
+    e.preventDefault()
+    if (pseudo && pass) {
+      listUser
+        .filter((user) => user.pseudo === pseudo && user.pass === pass)
+        .map((user: any) => {
+          console.log(user.pseudo)
+          setIsMe(user.id)
+          setIsErrorAuth(false)
+          setIsAuth(true)
+          console.log(pseudo)
+          console.log(pass)
+          handleCloseAuth()
+        })
+    } else {
+      setIsErrorAuth(true)
+      setIsAuth(false)
+    }
+  }
   //POST
   const postMsg = (e: any) => {
     e.preventDefault()
@@ -95,7 +126,6 @@ function App() {
   const showModalUpdate = (msg: any) => {
     handleShow()
     setUpdateMsg(msg.text)
-    // setUpdateUserId(msg.user_id)
     setMsgId(msg.id)
   }
   const updMsg = (e: any) => {
@@ -136,12 +166,8 @@ function App() {
 
   //DELETE
   const deleteMsg = (id: any) => {
-    var config = {
-      method: 'delete',
-      url: `https://622a896c14ccb950d21e946d.mockapi.io/messages/${id}`,
-      headers: {},
-    }
-    axios(config)
+    axios
+      .delete(`https://622a896c14ccb950d21e946d.mockapi.io/messages/${id}`)
       .then(function (response) {
         const taches: any = listMsg.filter((msg: any) => msg.id !== id)
 
@@ -155,18 +181,12 @@ function App() {
   return (
     <>
       <Container fluid className='p-0'>
-        <Navbar
-          className='px-2'
-          color='white'
-          style={{ height: '5vh', backgroundColor: '#F2494E' }}
-        >
-          <Navbar.Brand href='#home'>
+        <Navbar className='px-2 bg-secondary' style={{ height: '5vh', color: 'white' }}>
+          <Navbar.Brand href='#home' className='text-white'>
             <h3>Chat Book</h3>
           </Navbar.Brand>
           <Navbar.Collapse className='justify-content-end'>
-            <Navbar.Text>
-              Signed in as: <a href='#login'>Mark Otto</a>
-            </Navbar.Text>
+            <Navbar.Text className='text-white'>Signed in as : Mark Otto</Navbar.Text>
           </Navbar.Collapse>
         </Navbar>
       </Container>
@@ -198,68 +218,70 @@ function App() {
           <Col className='' lg='9' style={{ height: '100vh' }}>
             <h2 className='my-3'>Message List</h2>
             <hr />
-            <Container
-              id='board'
-              style={{
-                display: 'block',
-                height: '60vh',
-                overflowY: 'scroll',
-              }}
-            >
-              {isLoadMsg ? (
-                <p>Chargement...</p>
-              ) : (
-                <>
-                  {listMsg.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={
-                        msg.user_id == isMe
-                          ? 'd-flex justify-content-end mt-3'
-                          : 'd-flex justify-content-start mt-3'
-                      }
-                    >
-                      <Card style={{ width: '30rem' }}>
-                        <Card.Body>
-                          <sup className='d-flex justify-content-center'>
-                            {msg.createdAt.slice(8, 10)}-0{msg.createdAt.slice(6, 7)}-
-                            {msg.createdAt.slice(0, 4)} à {msg.createdAt.slice(11, 19)}
-                          </sup>
-                          <hr />
-                          {listUser
-                            .filter((user) => user.id == msg.user_id)
-                            .map((user) => (
-                              <Card.Title key={user.id}>{user.name}</Card.Title>
-                            ))}
-                          <Card.Text>{msg.text}</Card.Text>
-                          <Card.Text className='d-flex justify-content-end'>
-                            {msg.user_id == isMe && (
-                              <>
-                                <Button
-                                  className='bg-white '
-                                  onClick={() => showModalUpdate(msg)}
-                                >
-                                  <img
-                                    src='/src/assets/icons8-stylo-à-bille-16.png'
-                                    alt='trash'
-                                  />
-                                </Button>
-                                <Button
-                                  className='bg-white mx-2'
-                                  onClick={() => deleteMsg(msg.id)}
-                                >
-                                  <img src='/src/assets/filled-trash_16.png' alt='trash' />
-                                </Button>
-                              </>
-                            )}
-                          </Card.Text>
-                        </Card.Body>
-                      </Card>
-                    </div>
-                  ))}
-                </>
-              )}
-            </Container>
+            {isAuth && (
+              <Container
+                id='board'
+                style={{
+                  display: 'block',
+                  height: '65vh',
+                  overflowY: 'scroll',
+                }}
+              >
+                {isLoadMsg ? (
+                  <p>Chargement...</p>
+                ) : (
+                  <>
+                    {listMsg.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={
+                          msg.user_id == isMe
+                            ? 'd-flex justify-content-end mt-3'
+                            : 'd-flex justify-content-start mt-3'
+                        }
+                      >
+                        <Card className='bg-light' style={{ width: '30rem' }}>
+                          <Card.Body>
+                            <sup className='d-flex justify-content-center'>
+                              {msg.createdAt.slice(8, 10)}-0{msg.createdAt.slice(6, 7)}-
+                              {msg.createdAt.slice(0, 4)} à {msg.createdAt.slice(11, 19)}
+                            </sup>
+                            <hr />
+                            {listUser
+                              .filter((user) => user.id == msg.user_id)
+                              .map((user) => (
+                                <Card.Title key={user.id}>{user.name}</Card.Title>
+                              ))}
+                            <Card.Text>{msg.text}</Card.Text>
+                            <Card.Text className='d-flex justify-content-end'>
+                              {msg.user_id == isMe && (
+                                <>
+                                  <Button
+                                    className='bg-white '
+                                    onClick={() => showModalUpdate(msg)}
+                                  >
+                                    <img
+                                      src='/src/assets/icons8-stylo-à-bille-16.png'
+                                      alt='trash'
+                                    />
+                                  </Button>
+                                  <Button
+                                    className='bg-white mx-2'
+                                    onClick={() => deleteMsg(msg.id)}
+                                  >
+                                    <img src='/src/assets/filled-trash_16.png' alt='trash' />
+                                  </Button>
+                                </>
+                              )}
+                            </Card.Text>
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </Container>
+            )}
             <Container className='d-flex justify-content-center mx-0 px-0' fluid='lg'>
               <Container
                 className='bg-light rounded mb-1'
@@ -270,9 +292,12 @@ function App() {
                   noValidate
                   className='my-4 d-flex justify-content-center'
                 >
-                  <Form.Label htmlFor='inputTask'></Form.Label>
+                  <Form.Label htmlFor='inputMsg'></Form.Label>
                   <InputGroup>
                     <FormControl
+                      type='text'
+                      id='msg'
+                      name='inputMsg'
                       placeholder='Saissez un message'
                       aria-label='Username'
                       aria-describedby='basic-addon1'
@@ -284,6 +309,54 @@ function App() {
                 <img src='https://img.icons8.com/material-sharp/24/000000/user-male-circle.png' />
               </Container>
             </Container>
+
+            <Modal show={showAuth} onHide={handleCloseAuth} backdrop='static' keyboard={false}>
+              <Modal.Header className='d-flex justify-content-center text-center'>
+                <Modal.Title>
+                  <img src='./src/assets/icons8-utilisateur-48.png' alt='avatar' />
+                  <div>Authentification</div>
+                </Modal.Title>
+              </Modal.Header>
+              <Form onSubmit={authUser}>
+                <Modal.Body>
+                  <Form.Label htmlFor='pseudo'></Form.Label>
+                  <InputGroup className='mb-3' size='sm'>
+                    <Form.Control
+                      type='text'
+                      id='pseudo'
+                      name='pseudo'
+                      placeholder='Pseudo'
+                      aria-describedby='pseudoBlock'
+                      value={pseudoUser}
+                      onChange={(e) => setPseudoUser(e.currentTarget.value)}
+                    />
+                  </InputGroup>
+                  <Form.Label htmlFor='pass'></Form.Label>
+                  <InputGroup className='mb-3' size='sm'>
+                    <Form.Control
+                      type='password'
+                      id='pass'
+                      name='pass'
+                      placeholder='Mot de passe'
+                      aria-describedby='passBlock'
+                      value={passUser}
+                      onChange={(e) => setPassUser(e.currentTarget.value)}
+                    />
+                  </InputGroup>
+                  {isError && (
+                    <div className='text-danger text-center'>
+                      Votre pseudo ou votre mot de pas sont incorrect
+                    </div>
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant='outline-success' type='submit' id='button-addon2'>
+                    Valider
+                  </Button>
+                </Modal.Footer>
+              </Form>
+            </Modal>
+
             <Modal show={show} onHide={handleClose}>
               <Modal.Header closeButton>
                 <Modal.Title>Modifier un message</Modal.Title>
