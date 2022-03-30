@@ -1,7 +1,20 @@
-h2 {
+/* h2 {
   color: #575d61;
-}
+} */
 
+.list-user:hover {
+  background-color: #764abc !important;
+  /* background-color: rgb(133, 0, 160) !important; */
+  /* background-color: rgb(194, 18, 230) !important; */
+}
+.butt {
+  border: none !important;
+}
+.butt:hover,
+.butt:active {
+  background-color: #bd61d4 !important;
+  border-color: #764abc !important;
+}
 ::-webkit-scrollbar {
   width: 6px;
   border-radius: 10px;
